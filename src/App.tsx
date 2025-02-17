@@ -1,72 +1,126 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
+import axios from "axios";
+import { useState, useEffect } from "react";
+
+const client = axios.create({
+  baseURL: "http://localhost:9090/api/tasks",
+});
 
 function App() {
-  const [count, setCount] = useState(0);
+  let nameText = " ";
+  let priorityText = " ";
+  let stateText = " ";
+
+  const [tasks, setTasks] = useState([]);
+  const [name, setName] = useState("");
+  const [priority, setPriority] = useState("");
+  const [state, setState] = useState("");
+
+  const handleSearch = (
+    nameArg: string,
+    priorityArg: String,
+    stateArg: String
+  ) => {
+    client
+      .get("/find/" + nameArg + "." + priorityArg + "." + stateArg + "/", {
+        params: {
+          name,
+          priority,
+          state,
+        },
+      })
+      .then((response) => {
+        setTasks(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the tasks!", error);
+        console.log(nameArg);
+        console.log(priorityArg);
+        console.log(stateArg);
+      });
+  };
 
   return (
     <>
-      <h1>Todo App</h1>
+      <h2>Todo App</h2>
       <div className="card">
         <a>
-          Name:<input type="text"></input>
+          Name:
+          <input
+            type="text"
+            onChange={(input) => {
+              nameText = input.target.value;
+            }}
+          ></input>
         </a>
         <a>
           Priority:
-          <select name="priority" id="pri">
-            <option value="all">All</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
+          <select
+            name="priority"
+            id="pri"
+            onChange={(input) => {
+              priorityText = input.target.value;
+            }}
+          >
+            <option value="%20">All</option>
+            <option value="3">High</option>
+            <option value="2">Medium</option>
+            <option value="1">Low</option>
           </select>
         </a>
         <a>
-          State:{" "}
-          <select name="State" id="state">
-            <option value="all">All</option>
-            <option value="done">Done</option>
-            <option value="undone">Undone</option>
+          State:
+          <select
+            name="State"
+            id="state"
+            onChange={(input) => {
+              stateText = input.target.value;
+            }}
+          >
+            <option value="%20">All</option>
+            <option value="1">Done</option>
+            <option value="0">Undone</option>
           </select>
-          <button>Search</button>
+          <button
+            onClick={() => handleSearch(nameText, priorityText, stateText)}
+          >
+            Search
+          </button>
         </a>
       </div>
       <button>+ New To Do</button>
       <table>
-        <tr>
-          <th>
-            <input type="checkbox"></input>
-          </th>
-          <th>Name</th>
-          <th>Priority</th>
-          <th>Due Date</th>
-          <th>Actions</th>
-        </tr>
+        <thead>
+          <tr>
+            <th>
+              <input type="checkbox"></input>
+            </th>
+            <th>Name</th>
+            <th>Priority</th>
+            <th>Due Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tasks.map((task) => (
+            <tr key={task["id"]}>
+              <td>
+                <input type="checkbox" checked={task["Done"]}></input>
+              </td>
+              <td>{task["Name"]}</td>
+              <td>{task["priority"]}</td>
+              <td>{task["dueDate"]}</td>
+              <td>
+                <button>Edit</button>
+                <button>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
       </table>
       <button>Previous</button>
       <a> Current </a>
       <button>Next</button>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   );
 }
