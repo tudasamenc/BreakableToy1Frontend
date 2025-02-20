@@ -1,16 +1,18 @@
 import "./App.css";
 import axios from "axios";
+import NewTask from "./NewTask";
 import { useState, useEffect } from "react";
+import EditTask from "./EditTask";
 
 const client = axios.create({
   baseURL: "http://localhost:9090/api/tasks",
 });
 
-function App() {
-  let nameText = " ";
-  let priorityText = " ";
-  let stateText = " ";
+let nameText = " ";
+let priorityText = " ";
+let stateText = " ";
 
+function App() {
   const [tasks, setTasks] = useState([]);
   const [name, setName] = useState("");
   const [priority, setPriority] = useState("");
@@ -34,9 +36,6 @@ function App() {
       })
       .catch((error) => {
         console.error("There was an error fetching the tasks!", error);
-        console.log(nameArg);
-        console.log(priorityArg);
-        console.log(stateArg);
       });
   };
 
@@ -111,7 +110,7 @@ function App() {
           </button>
         </a>
       </div>
-      <button>+ New To Do</button>
+      <NewTask />
       <table>
         <thead>
           <tr>
@@ -128,13 +127,18 @@ function App() {
           {tasks.map((task) => (
             <tr key={task["id"]}>
               <td>
-                <input type="checkbox" checked={task["Done"]}></input>
+                <input type="checkbox" checked={task["done"]}></input>
               </td>
-              <td>{task["Name"]}</td>
+              <td>{task["name"]}</td>
               <td>{task["priority"]}</td>
               <td>{task["dueDate"]}</td>
               <td>
-                <button>Edit</button>
+                <EditTask
+                  editId={task["id"]}
+                  editname={task["name"]}
+                  editpriority={task["priority"]}
+                  editDate={task["dueDate"]}
+                />
                 <button onClick={() => handleDelete(task["id"])}>Delete</button>
               </td>
             </tr>
