@@ -1,7 +1,40 @@
 import React, { useState } from "react";
+import axios from "axios";
 import "./NewTask.css";
 
 export default function NewTask() {
+  const [tasks, setTasks] = useState([]);
+  const [name, setName] = useState("");
+  const [id, setId] = useState("");
+  const [priority, setPriority] = useState("");
+  const [state, setState] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [doneDate, setDoneDate] = useState("");
+
+  const handleNew = (
+    nameArg: string,
+    priorityArg: number,
+    stateArg: String,
+    dueDateArg: string
+  ) => {
+    {
+    }
+    client
+      .post("", {
+        name: nameArg,
+        state: stateArg,
+        priority: priorityArg,
+        dueDate: dueDateArg,
+        doneDate: dueDateArg,
+      })
+      .then((response) => {
+        setTasks(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the tasks!", error);
+      });
+  };
+
   const [modal, setModal] = useState(false);
 
   const toggleModal = () => {
@@ -14,21 +47,24 @@ export default function NewTask() {
   } else {
     document.body.classList.remove("active-modal");
   }
+  const client = axios.create({
+    baseURL: "http://localhost:9090/api/tasks",
+  });
 
   let nameText = " ";
-  let priorityText = " ";
-  //let stateText = " ";
+  let priorityText = 0;
+  let dueDateText = " ";
   return (
     <>
       <button onClick={toggleModal} className="btn-modal">
-        + New Task
+        New Task
       </button>
 
       {modal && (
         <div className="modal">
           <div onClick={toggleModal} className="overlay"></div>
           <div className="modal-content">
-            <h2>Register New Task</h2>
+            <h2>New Task</h2>
             <a>
               Name:
               <input
@@ -44,10 +80,9 @@ export default function NewTask() {
                 name="priority"
                 id="pri"
                 onChange={(input) => {
-                  priorityText = input.target.value;
+                  priorityText = Number(input.target.value);
                 }}
               >
-                <option value="%20">All</option>
                 <option value="3">High</option>
                 <option value="2">Medium</option>
                 <option value="1">Low</option>
@@ -59,13 +94,22 @@ export default function NewTask() {
                 type="datetime-local"
                 id="birthdaytime"
                 name="birthdaytime"
+                onChange={(input) => {
+                  dueDateText = input.target.value;
+                }}
               ></input>
             </a>
-
             <button className="close-modal" onClick={toggleModal}>
               CLOSE
             </button>
-            <button onClick={toggleModal}>SAVE</button>
+            <button
+              onClick={() => {
+                handleNew(nameText, priorityText, "true", dueDateText);
+                toggleModal();
+              }}
+            >
+              SAVE
+            </button>
           </div>
         </div>
       )}

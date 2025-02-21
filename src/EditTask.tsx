@@ -66,8 +66,9 @@ export default function EditTask({
     baseURL: "http://localhost:9090/api/tasks",
   });
 
-  let nameText = " ";
-  let priorityText = 0;
+  let nameText = editname;
+  let priorityText = editpriority;
+  let dueDateText = editDate;
   let stateText = " ";
   return (
     <>
@@ -100,7 +101,6 @@ export default function EditTask({
                   priorityText = Number(input.target.value);
                 }}
               >
-                <option value="%20">All</option>
                 <option value="3">High</option>
                 <option value="2">Medium</option>
                 <option value="1">Low</option>
@@ -113,6 +113,9 @@ export default function EditTask({
                 id="birthdaytime"
                 name="birthdaytime"
                 defaultValue={editDate}
+                onChange={(input) => {
+                  dueDateText = input.target.value;
+                }}
               ></input>
             </a>
             <button className="close-modal" onClick={toggleModal}>
@@ -120,7 +123,7 @@ export default function EditTask({
             </button>
             <button
               onClick={() => {
-                handleEdit(nameText, priorityText, "true", editId, editDate);
+                handleEdit(nameText, priorityText, "true", editId, dueDateText);
                 toggleModal();
               }}
             >
