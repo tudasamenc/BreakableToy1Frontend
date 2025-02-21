@@ -49,18 +49,6 @@ function App() {
         console.error("There was an error deleting the task!", error);
       });
   };
-  /*
-  const handleUpdate = (id: number) => {
-    client
-      .put("/update/" + id)
-      .then((response) => {
-        setTasks(tasks.filter((task) => task["id"] !== id));
-      })
-      .catch((error) => {
-        console.error("There was an error updating the task!", error);
-      });
-  };
-  */
 
   return (
     <>

@@ -4,7 +4,7 @@ import "./NewTask.css";
 
 interface Props {
   editname: string;
-  editpriority: string;
+  editpriority: number;
   editDate: string;
   editId: number;
 }
@@ -25,7 +25,7 @@ export default function EditTask({
 
   const handleEdit = (
     nameArg: string,
-    priorityArg: String,
+    priorityArg: number,
     stateArg: String,
     idArg: number,
     dueDateArg: string
@@ -35,14 +35,12 @@ export default function EditTask({
     }
     client
       .put("/update/" + idArg, {
-        params: {
-          id: idArg,
-          name: "Prueba",
-          state: stateArg,
-          priority: priorityArg,
-          dueDate: dueDateArg,
-          doneDate: dueDateArg,
-        },
+        id: idArg,
+        name: nameArg,
+        state: stateArg,
+        priority: priorityArg,
+        dueDate: dueDateArg,
+        doneDate: dueDateArg,
       })
       .then((response) => {
         setTasks(response.data);
@@ -69,7 +67,7 @@ export default function EditTask({
   });
 
   let nameText = " ";
-  let priorityText = " ";
+  let priorityText = 0;
   let stateText = " ";
   return (
     <>
@@ -99,7 +97,7 @@ export default function EditTask({
                 id="pri"
                 defaultValue={editpriority}
                 onChange={(input) => {
-                  priorityText = input.target.value;
+                  priorityText = Number(input.target.value);
                 }}
               >
                 <option value="%20">All</option>
