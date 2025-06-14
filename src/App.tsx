@@ -1,4 +1,5 @@
 import "./App.css";
+import TextPressure from './TextPressure';
 import axios from "axios";
 import NewTask from "./NewTask";
 import { useState, useEffect } from "react";
@@ -16,6 +17,7 @@ let doneFilter= false;
 let doneFilterValue = false;
 let priorityFilter = false;
 let priorityValue = 0;
+let currentpage = 0;
 
 
 function App() {
@@ -64,10 +66,31 @@ function App() {
         console.error("There was an error deleting the task!", error);
       });
   };
+  useEffect(() => {
+    handleSearch("", 0, doneFilter, doneFilterValue, priorityFilter, priorityValue);
+  }
+  , [nameText, doneFilter, doneFilterValue, priorityFilter, priorityValue]);
+
 
   return (
     <>
-      <h2>Taskify</h2>
+
+
+      <div style={{position: 'relative', height: 100,alignItems: 'center'}}>
+        <TextPressure
+          text="Taskerr"
+          flex={true}
+          alpha={false}
+          stroke={false}
+          width={true}
+          weight={true}
+          italic={true}
+          textColor="#000000"
+          strokeColor="#ff0000"
+          minFontSize={36}
+        />
+      </div>
+      
       <div className="card">
             <div style={{position: "absolute", top: 0, left: 0, width: "100vw", height: "100vh", zIndex: -1}}>
                 <Spline scene="https://prod.spline.design/D2VraFAA43auMbjT/scene.splinecode" />
@@ -113,7 +136,7 @@ function App() {
             <option value="0">Undone</option>
           </select>
           <Button variant="contained"
-            onClick={() => handleSearch(nameText,0, doneFilter, doneFilterValue, priorityFilter, priorityValue)}
+            onClick={() => handleSearch(nameText,currentpage, doneFilter, doneFilterValue, priorityFilter, priorityValue)}
           >
             Search
           </Button>
