@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./NewTask.css";
+import Button from '@mui/material/Button';
+//import "./NewTask.css";
+
 
 export default function NewTask() {
   const [tasks, setTasks] = useState([]);
@@ -56,9 +58,9 @@ export default function NewTask() {
   let dueDateText = " ";
   return (
     <>
-      <button onClick={toggleModal} className="btn-modal">
+      <Button variant="contained" onClick={toggleModal} className="btn-modal">
         New Task
-      </button>
+      </Button>
 
       {modal && (
         <div className="modal">
@@ -99,17 +101,17 @@ export default function NewTask() {
                 }}
               ></input>
             </a>
-            <button className="close-modal" onClick={toggleModal}>
+            <Button className="close-modal" onClick={toggleModal}>
               CLOSE
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => {
                 handleNew(nameText, priorityText, "true", dueDateText);
                 toggleModal();
               }}
             >
               SAVE
-            </button>
+            </Button>
           </div>
         </div>
       )}

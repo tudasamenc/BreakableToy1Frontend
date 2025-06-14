@@ -2,6 +2,9 @@ import "./App.css";
 import axios from "axios";
 import NewTask from "./NewTask";
 import { useState, useEffect } from "react";
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Spline from '@splinetool/react-spline';
 import EditTask from "./EditTask";
 
 const client = axios.create({
@@ -9,8 +12,11 @@ const client = axios.create({
 });
 
 let nameText = " ";
-let priorityText = " ";
-let stateText = " ";
+let doneFilter= false;
+let doneFilterValue = false;
+let priorityFilter = false;
+let priorityValue = 0;
+
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -20,15 +26,24 @@ function App() {
 
   const handleSearch = (
     nameArg: string,
-    priorityArg: String,
-    stateArg: String
+    pageArg: number,
+    filterDoneArg: boolean,
+    doneArg: boolean,
+    priorityArg: boolean,
+    priorityValue: number
   ) => {
     client
-      .get("/find/" + nameArg + "." + priorityArg + "." + stateArg + "/", {
+      .get("/paginated", {
         params: {
-          name,
-          priority,
-          state,
+          page: pageArg,
+          size: 10,
+          sortvar:0,
+          asc:true,
+          query:nameArg,
+          filterDone: filterDoneArg,
+          done: doneArg,
+          filterPriority: priorityArg,
+          priority: priorityValue,
         },
       })
       .then((response) => {
@@ -52,9 +67,13 @@ function App() {
 
   return (
     <>
-      <h2>Todo App</h2>
+      <h2>Taskify</h2>
       <div className="card">
-        <a>
+            <div style={{position: "absolute", top: 0, left: 0, width: "100vw", height: "100vh", zIndex: -1}}>
+                <Spline scene="https://prod.spline.design/D2VraFAA43auMbjT/scene.splinecode" />
+            </div>
+        <Box>
+        <Box>
           Name:
           <input
             type="text"
@@ -62,14 +81,15 @@ function App() {
               nameText = input.target.value;
             }}
           ></input>
-        </a>
+        </Box>
         <a>
           Priority:
           <select
             name="priority"
             id="pri"
             onChange={(input) => {
-              priorityText = input.target.value;
+              priorityFilter = input.target.value === "%20" ? false : true;
+              priorityValue = input.target.value === "%20" ? 0 : Number(input.target.value);
             }}
           >
             <option value="%20">All</option>
@@ -84,19 +104,22 @@ function App() {
             name="State"
             id="state"
             onChange={(input) => {
-              stateText = input.target.value;
+              doneFilter = input.target.value === "%20" ? false : true;
+              doneFilterValue = input.target.value === "1" ? true : false;
             }}
           >
             <option value="%20">All</option>
             <option value="1">Done</option>
             <option value="0">Undone</option>
           </select>
-          <button
-            onClick={() => handleSearch(nameText, priorityText, stateText)}
+          <Button variant="contained"
+            onClick={() => handleSearch(nameText,0, doneFilter, doneFilterValue, priorityFilter, priorityValue)}
           >
             Search
-          </button>
+          </Button>
+          
         </a>
+        </Box>
       </div>
       <NewTask />
       <table>
@@ -127,15 +150,15 @@ function App() {
                   editpriority={task["priority"]}
                   editDate={task["dueDate"]}
                 />
-                <button onClick={() => handleDelete(task["id"])}>Delete</button>
+                <Button variant="contained" onClick={() => handleDelete(task["id"])}>Delete</Button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <button>Previous</button>
+      <Button variant="contained">Previous</Button>
       <a> Current </a>
-      <button>Next</button>
+      <Button variant="contained">Next</Button>
     </>
   );
 }
