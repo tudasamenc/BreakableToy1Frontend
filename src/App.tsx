@@ -22,9 +22,6 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  List,
-  ListItem,
-  ListItemText,
   Paper,
   Table,
   TableHead,
@@ -158,7 +155,7 @@ function App() {
       doneState: boolean
     ) => {
     try {
-      const response = await client.put("/update/" + id, {
+      await client.put("/update/" + id, {
         id: id,
         done: doneState,
       });
@@ -461,19 +458,19 @@ function App() {
             </Typography>
             <Box display="flex" justifyContent="space-around" flexWrap="wrap" gap={2}>
               <Box textAlign="center">
-                <Typography variant="body2">🔹 Overall</Typography>
+                <Typography variant="body2"> Overall</Typography>
                 <Typography variant="subtitle2">{format(stats.overallAverageHours)}</Typography>
               </Box>
               <Box textAlign="center">
-                <Typography variant="body2">🔴 Priority 1 (Low)</Typography>
+                <Typography variant="body2"> Priority 1 (Low)</Typography>
                 <Typography variant="subtitle2">{format(stats.priority1AverageHours)}</Typography>
               </Box>
               <Box textAlign="center">
-                <Typography variant="body2">🟠 Priority 2 (Medium)</Typography>
+                <Typography variant="body2"> Priority 2 (Medium)</Typography>
                 <Typography variant="subtitle2">{format(stats.priority2AverageHours)}</Typography>
               </Box>
               <Box textAlign="center">
-                <Typography variant="body2">🟢 Priority 3 (High)</Typography>
+                <Typography variant="body2"> Priority 3 (High)</Typography>
                 <Typography variant="subtitle2">{format(stats.priority3AverageHours)}</Typography>
               </Box>
             </Box>
