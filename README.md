@@ -1,50 +1,85 @@
-# React + TypeScript + Vite
+Collecting workspace information```md
+# Taskerr
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Taskerr is a modern, interactive task management web application built with **React**, **TypeScript**, and **Vite**. It features a beautiful UI with Material-UI, advanced filtering and sorting, AI-powered advice for tasks, and animated visuals.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Task CRUD**: Create, edit, delete, and mark tasks as done/undone.
+- **Filtering & Sorting**: Search by name, filter by priority and status, and sort by various fields.
+- **Pagination**: Navigate through tasks with pagination controls.
+- **AI Advice**: Get AI-generated advice for each task.
+- **Statistics**: View average completion times overall and by priority.
+- **Responsive Design**: Works well on desktop and mobile.
+- **Animated Header & Background**: Eye-catching animated title and Spline 3D background.
 
-## Expanding the ESLint configuration
+## Screenshots
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+![Taskerr Screenshot](public/vite.svg) <!-- Replace with actual screenshot if available -->
 
-- Configure the top-level `parserOptions` property like this:
+## Getting Started
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18+ recommended)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+
+### Installation
+
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/yourusername/taskerr.git
+   cd taskerr
+   ```
+
+2. **Install dependencies:**
+   ```sh
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Start the development server:**
+   ```sh
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+4. **Open your browser:**  
+   Visit [http://localhost:5173](http://localhost:5173) (or the port shown in your terminal).
+
+### Backend
+
+Taskerr expects a backend API running at `http://localhost:9090/api/tasks`.  
+You can implement your own backend or connect to the provided API.
+
+## Project Structure
+
+- `src/App.tsx` – Main application logic and UI
+- `src/NewTask.tsx` – Modal for creating new tasks
+- `src/EditTask.tsx` – Modal for editing tasks
+- `src/AdviceTask.tsx` – AI advice dialog for tasks
+- `src/TextPressure.tsx` – Animated header component
+- `src/assets/` – Static assets
+
+## Customization
+
+- **Theme:** Easily customizable via Material-UI's theme in [`src/App.tsx`](src/App.tsx).
+- **API URL:** Change the backend API URL in the Axios client configuration.
+
+## Scripts
+
+- `npm run dev` – Start development server
+- `npm run build` – Build for production
+- `npm run preview` – Preview production build
+- `npm run lint` – Run ESLint
+
+## License
+
+MIT
+
+---
+
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
