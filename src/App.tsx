@@ -4,6 +4,13 @@ import axios from "axios";
 import NewTask from "./NewTask";
 import dayjs from 'dayjs';
 import { useState, useEffect } from "react";
+import duration from 'dayjs/plugin/duration';
+import utc from 'dayjs/plugin/utc';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+
+dayjs.extend(duration);
+dayjs.extend(utc);
+dayjs.extend(isSameOrBefore);
 import {
   Button,
   Box,
@@ -240,6 +247,7 @@ function App() {
                   <TableCell><b>Name</b></TableCell>
                   <TableCell><b>Priority</b></TableCell>
                   <TableCell><b>Due Date</b></TableCell>
+                  <TableCell><b>Days Left</b></TableCell>
                   <TableCell><b>Actions</b></TableCell>
                 </TableRow>
               </TableHead>
@@ -251,15 +259,43 @@ function App() {
                     </TableCell>
                     <TableCell>{task["name"]}</TableCell>
                     <TableCell>
-                      {task["priority"] === 3
-                        ? "High"
-                        : task["priority"] === 2
-                        ? "Medium"
-                        : task["priority"] === 1
-                        ? "Low"
-                        : task["priority"]}
+                      <Box
+                        sx={{
+                          backgroundColor:
+                            task["priority"] === 3
+                              ? 'rgba(255, 0, 0, 0.45)' // High priority red
+                              : task["priority"] === 2
+                              ? 'rgba(255, 0, 0, 0.21)' // Medium priority orange
+                              : task["priority"] === 1
+                              ? 'rgba(128, 0, 0, 0.15)' // Low priority green
+                              : 'gray',
+                          color: 'white',
+                          px: 2,
+                          py: 0.5,
+                          borderRadius: 1,
+                          textAlign: 'center',
+                          fontWeight: 'bold',
+                          width: 70,
+                        }}
+                      >
+                        {task["priority"] === 3
+                          ? "High"
+                          : task["priority"] === 2
+                          ? "Medium"
+                          : task["priority"] === 1
+                          ? "Low"
+                          : "Unknown"}
+                      </Box>
                     </TableCell>
                     <TableCell>{dayjs(task["dueDate"]).format('MMM D, YYYY h:mm A')}</TableCell>
+                    <TableCell>
+                      {(() => {
+                        const now = dayjs();
+                        const due = dayjs(task["dueDate"]);
+                        const diff = due.diff(now, 'day');
+                        return diff >= 0 ? `${diff} day(s) left` : `Overdue by ${Math.abs(diff)} day(s)`;
+                      })()}
+                    </TableCell>
                     <TableCell>
                       <Box display="flex" gap={1}>
                         <EditTask
