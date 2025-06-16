@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Dialog,
@@ -18,6 +18,7 @@ interface Props {
   editpriority: number;
   editDate: string;
   editId: number;
+  editState: boolean;
 }
 
 export default function EditTask({
@@ -25,6 +26,7 @@ export default function EditTask({
   editpriority,
   editDate,
   editId,
+  editState,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [nameText, setNameText] = useState(editname);
@@ -40,7 +42,7 @@ export default function EditTask({
       const response = await client.put("/update/" + editId, {
         id: editId,
         name: nameText,
-        state: "true",
+        done: editState,
         priority: priorityText,
         dueDate: dueDateText,
         doneDate: dueDateText,
@@ -51,6 +53,11 @@ export default function EditTask({
       console.error("There was an error updating the task!", error);
     }
   };
+  useEffect(() => {
+    setNameText(editname);
+    setPriorityText(editpriority);
+    setDueDateText(editDate);
+  }, [editname, editpriority, editDate, editId, editState]);   
 
   return (
     <>

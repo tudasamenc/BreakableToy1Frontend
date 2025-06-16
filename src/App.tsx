@@ -1,6 +1,7 @@
 import "./App.css";
 import TextPressure from './TextPressure';
 import axios from "axios";
+import AdviceTask from "./AdviceTask";
 import NewTask from "./NewTask";
 import dayjs from 'dayjs';
 import { useState, useEffect } from "react";
@@ -21,6 +22,9 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  List,
+  ListItem,
+  ListItemText,
   Paper,
   Table,
   TableHead,
@@ -47,6 +51,8 @@ let priorityFilter = false;
 let priorityValue = 0;
 let currentpage = 0;
 let totalPages = 0;
+let globalSortVar = 0;
+let globalAsc = true;
 
 // Dark Theme with smaller fonts
 const darkTheme = createTheme({
@@ -80,22 +86,56 @@ const darkTheme = createTheme({
 
 function App() {
   const [tasks, setTasks] = useState([]);
+  const [stats, setStats] = useState([]);
 
+  const format = (hours: number) => {
+    const days = Math.floor(hours / 24);
+    const hrs = Math.round(hours % 24);
+    return `${days}d ${hrs}h`;
+  };
+
+  const handleStats = () => {
+    client
+      .get("/stats", {
+      })
+      .then((response) => {
+        setStats(response.data);
+        console.log("Stats:", response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the tasks!", error);
+      });
+  };
+
+  const handleTotalPages = () => {
+    client
+      .get("/count", {
+      })
+      .then((response) => {
+        totalPages = response.data;
+        console.log("Total pages:", totalPages);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the total pages!", error);
+      });
+  };
   const handleSearch = (
     nameArg: string,
     pageArg: number,
     filterDoneArg: boolean,
     doneArg: boolean,
     priorityArg: boolean,
-    priorityValue: number
+    priorityValue: number,
+    sortVarArg: number,
+    ascArg: boolean
   ) => {
     client
       .get("/paginated", {
         params: {
           page: pageArg,
           size: 10,
-          sortvar: 0,
-          asc: true,
+          sortvar: sortVarArg,
+          asc: ascArg,
           query: nameArg,
           filterDone: filterDoneArg,
           done: doneArg,
@@ -105,17 +145,40 @@ function App() {
       })
       .then((response) => {
         setTasks(response.data);
+        handleTotalPages();
+        handleStats();
       })
       .catch((error) => {
         console.error("There was an error fetching the tasks!", error);
       });
   };
 
+    const handleDone = async (
+      id: number,
+      doneState: boolean
+    ) => {
+    try {
+      const response = await client.put("/update/" + id, {
+        id: id,
+        done: doneState,
+      });
+    } catch (error) {
+      console.error("There was an error updating the task!", error);
+    }
+  }
+
+
+
+
+  // Delete task handler
+  // This function deletes a task by its ID and updates the state
+
   const handleDelete = (id: number) => {
     client
       .delete("/delete/" + id)
       .then(() => {
         setTasks(tasks.filter((task) => task["id"] !== id));
+        handleTotalPages();
       })
       .catch((error) => {
         console.error("There was an error deleting the task!", error);
@@ -123,7 +186,8 @@ function App() {
   };
 
   useEffect(() => {
-    handleSearch("", 0, doneFilter, doneFilterValue, priorityFilter, priorityValue);
+    handleSearch("", 0, doneFilter, doneFilterValue, priorityFilter, priorityValue,0, true);
+    handleTotalPages();
   }, []);
 
   return (
@@ -139,6 +203,7 @@ function App() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            backgroundColor: "rgba(0, 0, 0, 1)",
           }}
         >
           <TextPressure
@@ -165,7 +230,7 @@ function App() {
           <Box display="flex" justifyContent="right">
             <Paper elevation={6} sx={{ p: 3, mb: 4, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={4}>
+                <Grid>
                   <TextField
                     fullWidth
                     size="small"
@@ -219,7 +284,7 @@ function App() {
                     variant="contained"
                     size="small"
                     onClick={() =>
-                      handleSearch(nameText, currentpage, doneFilter, doneFilterValue, priorityFilter, priorityValue)
+                      handleSearch(nameText, currentpage, doneFilter, doneFilterValue, priorityFilter, priorityValue,0, globalAsc)
                     }
                   >
                     Search
@@ -236,7 +301,7 @@ function App() {
             sx={{
               mb: 4,
               backgroundColor: 'rgba(0, 0, 0, 0.8)',
-              maxHeight: 600,
+              maxHeight: 450,
               overflowY: 'auto',
               overflowX: 'auto',
             }}
@@ -244,11 +309,41 @@ function App() {
             <Table stickyHeader size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell><b>Done</b></TableCell>
-                  <TableCell><b>Name</b></TableCell>
-                  <TableCell><b>Priority</b></TableCell>
-                  <TableCell><b>Due Date</b></TableCell>
-                  <TableCell><b>Days Left</b></TableCell>
+                  <TableCell><Button onClick={
+                    () => {
+                      globalAsc = !globalAsc;
+                      globalSortVar = 2; // 
+                      handleSearch(nameText, currentpage, doneFilter, doneFilterValue, priorityFilter, priorityValue,globalSortVar, globalAsc);
+                    }
+                  }>Done</Button></TableCell>
+                  <TableCell><Button onClick={
+                    () => {
+                      globalAsc = !globalAsc;
+                      globalSortVar = 3; // Sort by name
+                      handleSearch(nameText, currentpage, doneFilter, doneFilterValue, priorityFilter, priorityValue,globalSortVar, globalAsc);
+                    }
+                  }>Name</Button></TableCell>
+                  <TableCell><Button onClick={
+                    () => {
+                      globalAsc = !globalAsc;
+                      globalSortVar = 1; // Sort by priority
+                      handleSearch(nameText, currentpage, doneFilter, doneFilterValue, priorityFilter, priorityValue,globalSortVar, globalAsc);
+                    }
+                  }>Priority</Button></TableCell>
+                  <TableCell><Button onClick={
+                    () => {
+                      globalAsc = !globalAsc;
+                      globalSortVar = 4; // Sort by due date
+                      handleSearch(nameText, currentpage, doneFilter, doneFilterValue, priorityFilter, priorityValue,globalSortVar, globalAsc);
+                    }
+                  }>Due Date</Button></TableCell>
+                  <TableCell><Button onClick={
+                    () => {
+                      globalAsc = !globalAsc;
+                      globalSortVar = 4; // Sort by days left
+                      handleSearch(nameText, currentpage, doneFilter, doneFilterValue, priorityFilter, priorityValue,globalSortVar, globalAsc);
+                    }
+                  }>Days Left</Button></TableCell>
                   <TableCell><b>Actions</b></TableCell>
                 </TableRow>
               </TableHead>
@@ -256,9 +351,19 @@ function App() {
                 {tasks.map((task) => (
                   <TableRow key={task["id"]}>
                     <TableCell>
-                      <Checkbox checked={task["done"]} disabled />
+                      <Checkbox checked={task["done"]} onClick={
+                        () => {
+                          handleDone(task["id"], !task["done"]);
+                          console.log("Task done status changed:", task["done"]);
+                          handleSearch(nameText, currentpage, doneFilter, doneFilterValue, priorityFilter, priorityValue,globalSortVar, globalAsc); 
+                        }
+                      } />
                     </TableCell>
-                    <TableCell>{task["name"]}</TableCell>
+                    <TableCell>
+                    <span style={{ textDecoration: task["done"] ? "line-through" : "none" }}>
+                      {task["name"]}
+                    </span>
+                  </TableCell>
                     <TableCell>
                       <Box
                         sx={{
@@ -304,8 +409,11 @@ function App() {
                           editname={task["name"]}
                           editpriority={task["priority"]}
                           editDate={task["dueDate"]}
+                          editState={task["done"]}
                         />
-                        
+                        <AdviceTask
+                          taskId={task["id"]}
+                          />
                         <Button
                           variant="outlined"
                           color="error"
@@ -328,24 +436,48 @@ function App() {
               () => {
                 if (currentpage > 0) {
                   currentpage -= 1;
-                  handleSearch(nameText, currentpage, doneFilter, doneFilterValue, priorityFilter, priorityValue);
+                  handleSearch(nameText, currentpage, doneFilter, doneFilterValue, priorityFilter, priorityValue,globalSortVar, globalAsc);
                 }
               }
             }>Previous</Button>
             <Typography variant="body1" display="flex" alignItems="center">Current</Typography>
             <Button variant="outlined" size="small" onClick={
               () => {
-                
+                if (currentpage < Math.ceil(totalPages / 10) - 1) {
                   currentpage += 1;
                   console.log("Current page:", currentpage);
-                  handleSearch(nameText, currentpage, doneFilter, doneFilterValue, priorityFilter, priorityValue);
-                
+                  handleSearch(nameText, currentpage, doneFilter, doneFilterValue, priorityFilter, priorityValue,globalSortVar, globalAsc);
+                }
               }
             }>Next</Button>
           </Box>
           <Box display="flex" justifyContent="center" mt={2} fontSize="0.8rem" color="#90caf9">
-            {currentpage + 1} / {Math.ceil(tasks.length / 10)} pages
+            {currentpage + 1} / {Math.ceil(totalPages / 10)} pages
           </Box>
+
+          <Paper elevation={4} sx={{ mt: 4, p: 2, backgroundColor: 'rgba(0,0,0,0.6)', color: '#90caf9' }}>
+            <Typography variant="h6" color="primary" gutterBottom>
+              ⏱ Average Completion Times
+            </Typography>
+            <Box display="flex" justifyContent="space-around" flexWrap="wrap" gap={2}>
+              <Box textAlign="center">
+                <Typography variant="body2">🔹 Overall</Typography>
+                <Typography variant="subtitle2">{format(stats.overallAverageHours)}</Typography>
+              </Box>
+              <Box textAlign="center">
+                <Typography variant="body2">🔴 Priority 1 (Low)</Typography>
+                <Typography variant="subtitle2">{format(stats.priority1AverageHours)}</Typography>
+              </Box>
+              <Box textAlign="center">
+                <Typography variant="body2">🟠 Priority 2 (Medium)</Typography>
+                <Typography variant="subtitle2">{format(stats.priority2AverageHours)}</Typography>
+              </Box>
+              <Box textAlign="center">
+                <Typography variant="body2">🟢 Priority 3 (High)</Typography>
+                <Typography variant="subtitle2">{format(stats.priority3AverageHours)}</Typography>
+              </Box>
+            </Box>
+          </Paper>
         </Box>
       </>
     </ThemeProvider>
