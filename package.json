@@ -19,6 +19,7 @@
     "@splinetool/runtime": "^1.9.98",
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
+    "dayjs": "^1.11.13",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

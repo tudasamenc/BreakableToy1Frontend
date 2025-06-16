@@ -2,6 +2,7 @@ import "./App.css";
 import TextPressure from './TextPressure';
 import axios from "axios";
 import NewTask from "./NewTask";
+import dayjs from 'dayjs';
 import { useState, useEffect } from "react";
 import {
   Button,
@@ -235,7 +236,7 @@ function App() {
             <Table stickyHeader size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell><Checkbox disabled /></TableCell>
+                  <TableCell><b>Done</b></TableCell>
                   <TableCell><b>Name</b></TableCell>
                   <TableCell><b>Priority</b></TableCell>
                   <TableCell><b>Due Date</b></TableCell>
@@ -258,7 +259,7 @@ function App() {
                         ? "Low"
                         : task["priority"]}
                     </TableCell>
-                    <TableCell>{task["dueDate"]}</TableCell>
+                    <TableCell>{dayjs(task["dueDate"]).format('MMM D, YYYY h:mm A')}</TableCell>
                     <TableCell>
                       <Box display="flex" gap={1}>
                         <EditTask
