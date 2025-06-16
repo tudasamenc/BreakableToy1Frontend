@@ -46,6 +46,7 @@ let doneFilterValue = false;
 let priorityFilter = false;
 let priorityValue = 0;
 let currentpage = 0;
+let totalPages = 0;
 
 // Dark Theme with smaller fonts
 const darkTheme = createTheme({
@@ -176,7 +177,7 @@ function App() {
                   />
                 </Grid>
 
-                <Grid item xs={6} sm={2}>
+                <Grid>
                   <FormControl fullWidth size="small">
                     <InputLabel>Priority</InputLabel>
                     <Select
@@ -195,7 +196,7 @@ function App() {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={6} sm={2}>
+                <Grid>
                   <FormControl fullWidth size="small">
                     <InputLabel>Status</InputLabel>
                     <Select
@@ -213,7 +214,7 @@ function App() {
                   </FormControl>
                 </Grid>
 
-                <Grid item xs={12} sm={4} display="flex" justifyContent="center" gap={2}>
+                <Grid>
                   <Button
                     variant="contained"
                     size="small"
@@ -304,6 +305,7 @@ function App() {
                           editpriority={task["priority"]}
                           editDate={task["dueDate"]}
                         />
+                        
                         <Button
                           variant="outlined"
                           color="error"
