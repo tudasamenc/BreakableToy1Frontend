@@ -1,4 +1,3 @@
-Collecting workspace information```md
 # Taskerr
 
 Taskerr is a modern, interactive task management web application built with **React**, **TypeScript**, and **Vite**. It features a beautiful UI with Material-UI, advanced filtering and sorting, AI-powered advice for tasks, and animated visuals.
