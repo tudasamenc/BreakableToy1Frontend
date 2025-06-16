@@ -198,14 +198,14 @@ const TextPressure: React.FC<TextPressureProps> = ({
           color: ${textColor};
         }
       `}</style>
-
+        
             <h1
                 ref={titleRef}
                 className={`text-pressure-title ${dynamicClassName}`}
                 style={{
                     fontFamily,
                     textTransform: 'uppercase',
-                    fontSize: 200,
+                    fontSize: 150,
                     lineHeight,
                     transform: `scale(1, ${scaleY})`,
                     transformOrigin: 'center top',
